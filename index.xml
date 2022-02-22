@@ -5,26 +5,7 @@
     <link>https://RBahrami.github.io/</link>
     <description>Recent content on RBahrami</description>
     <generator>Hugo -- gohugo.io</generator>
-    <language>en-us</language>
-    <lastBuildDate>Tue, 22 Feb 2022 15:49:51 +0330</lastBuildDate><atom:link href="https://RBahrami.github.io/index.xml" rel="self" type="application/rss+xml" />
-    <item>
-      <title>Getting_started_with_tiny_usb_msd</title>
-      <link>https://RBahrami.github.io/stm32/getting_started_with_tiny_usb_msd/</link>
-      <pubDate>Tue, 22 Feb 2022 15:49:51 +0330</pubDate>
-      
-      <guid>https://RBahrami.github.io/stm32/getting_started_with_tiny_usb_msd/</guid>
-      <description>Comming soon!</description>
-    </item>
-    
-    <item>
-      <title>TEST</title>
-      <link>https://RBahrami.github.io/stm32/test/</link>
-      <pubDate>Tue, 22 Feb 2022 15:49:51 +0330</pubDate>
-      
-      <guid>https://RBahrami.github.io/stm32/test/</guid>
-      <description>Comming soon!</description>
-    </item>
-    
+    <language>en-us</language><atom:link href="https://RBahrami.github.io/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>About</title>
       <link>https://RBahrami.github.io/about/</link>
@@ -32,7 +13,12 @@
       
       <guid>https://RBahrami.github.io/about/</guid>
       <description>About me
- I&amp;rsquo;m Reza Bahrami and have a MSc in Electronics digital systems I&amp;rsquo;m interested in Embedded systems, IoT and automation My expertise: &amp;ndash; AVR, ATXmega, STM32 and ESP32 microcontrollers &amp;ndash; I&amp;rsquo;m programming in C and C++ for embedded systmes and C# for windows applications (WPF) and Android (Xamarin)  </description>
+  I&amp;rsquo;m Reza Bahrami and have a MSc in Electronics digital systems
+  I&amp;rsquo;m interested in Embedded systems, IoT and automation
+  My expertise:
+&amp;ndash; AVR, ATXmega, STM32 and ESP32 microcontrollers
+&amp;ndash; I&amp;rsquo;m programming in C and C++ for embedded systmes and C# for windows applications (WPF) and Android (Xamarin)
+  </description>
     </item>
     
   </channel>

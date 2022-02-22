@@ -2,22 +2,12 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
-    <loc>https://RBahrami.github.io/stm32/getting_started_with_tiny_usb_msd/</loc>
-    <lastmod>2022-02-22T15:49:51+03:30</lastmod>
-  </url><url>
-    <loc>https://RBahrami.github.io/</loc>
-    <lastmod>2022-02-22T15:49:51+03:30</lastmod>
-  </url><url>
-    <loc>https://RBahrami.github.io/stm32/</loc>
-    <lastmod>2022-02-22T15:49:51+03:30</lastmod>
-  </url><url>
-    <loc>https://RBahrami.github.io/stm32/test/</loc>
-    <lastmod>2022-02-22T15:49:51+03:30</lastmod>
-  </url><url>
     <loc>https://RBahrami.github.io/about/</loc>
     <lastmod>2022-02-22T15:42:13+03:30</lastmod>
   </url><url>
     <loc>https://RBahrami.github.io/categories/</loc>
+  </url><url>
+    <loc>https://RBahrami.github.io/</loc>
   </url><url>
     <loc>https://RBahrami.github.io/tags/</loc>
   </url>
