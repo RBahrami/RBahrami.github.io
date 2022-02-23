@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Pages on Hugo stack them test</title>
+    <link>https://RBahrami.github.io/page/</link>
+    <description>Recent content in Pages on Hugo stack them test</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 22 Feb 2022 15:42:13 +0330</lastBuildDate><atom:link href="https://RBahrami.github.io/page/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>About Me</title>
+      <link>https://RBahrami.github.io/about-me/</link>
+      <pubDate>Tue, 22 Feb 2022 15:42:13 +0330</pubDate>
+      
+      <guid>https://RBahrami.github.io/about-me/</guid>
+      <description>I&amp;rsquo;m Reza Bahrami and have a MSc in Electronics digital systems
+  I&amp;rsquo;m interested in Embedded systems, IoT and automation
+  My expertise:
+&amp;ndash; AVR, ATXmega, STM32 and ESP32 microcontrollers
+&amp;ndash; I&amp;rsquo;m programming in C and C++ for embedded systmes and C# for windows applications (WPF) and Android (Xamarin)
+  Follow me on GitHub.</description>
+    </item>
+    
+    <item>
+      <title>Archives</title>
+      <link>https://RBahrami.github.io/archives/</link>
+      <pubDate>Tue, 28 May 2019 00:00:00 +0000</pubDate>
+      
+      <guid>https://RBahrami.github.io/archives/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Search</title>
+      <link>https://RBahrami.github.io/search/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://RBahrami.github.io/search/</guid>
+      <description></description>
+    </item>
+    
+  </channel>
+</rss>
