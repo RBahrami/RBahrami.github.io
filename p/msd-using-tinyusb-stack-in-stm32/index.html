@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='Getting Started with TinyUSB in STM32'><title>MSD using tinyUSB stack in STM32</title>
+
+<link rel='canonical' href='https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/'>
+
+<link rel="stylesheet" href="/scss/style.min.6e28907171ccdc82609ab6675872e3dc961a1b00f252b4d0a9299bde606269c3.css"><meta property='og:title' content='MSD using tinyUSB stack in STM32'>
+<meta property='og:description' content='Getting Started with TinyUSB in STM32'>
+<meta property='og:url' content='https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/'>
+<meta property='og:site_name' content='RBahrami&#39;s Blog'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='STM32' /><meta property='article:tag' content='TinyUSB' /><meta property='article:tag' content='MSD' /><meta property='article:tag' content='MSC' /><meta property='article:tag' content='USB' /><meta property='article:published_time' content='2022-02-23T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-02-23T00:00:00&#43;00:00'/>
+<meta name="twitter:title" content="MSD using tinyUSB stack in STM32">
+<meta name="twitter:description" content="Getting Started with TinyUSB in STM32">
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "light");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="/" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+	
+
+    <article class="main-article">
+    <header class="article-header">
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/stm32/" style="background-color: #2a9d8f; color: #fff;">
+                STM32
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/msd-using-tinyusb-stack-in-stm32/">MSD using tinyUSB stack in STM32</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        Getting Started with TinyUSB in STM32
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Feb 23, 2022</time>
+            </div>
+        
+
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    
+    
+    <blockquote>
+<p>TinyUSB is an open-source cross-platform USB Host/Device stack for embedded systems, designed to be memory-safe with no dynamic allocation and thread-safe with all interrupt events being deferred and then handled in the non-ISR task function.</p>
+</blockquote>
+<h2 id="introduction">Introduction</h2>
+<p>The ST&rsquo;s USB stack that is included in STM32CubeIDE, has lots of problems, including:</p>
+<ol>
+<li>Large footprint.</li>
+<li>All of the USB services are running on ISR</li>
+<li>Can&rsquo;t correctly use it in RTOS</li>
+</ol>
+<p>In this article, I&rsquo;m going to show you how to use <a class="link" href="https://www.tinyusb.org"  target="_blank" rel="noopener"
+    >TinyUSB</a> stack to create a USB mass storage device (MSD) using STM32.</p>
+<h3 id="my-envirement">My Envirement:</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Syntax</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Windows 10 (64bit)</td>
+</tr>
+<tr>
+<td>Language</td>
+<td>C</td>
+</tr>
+<tr>
+<td>IDE/Compiler</td>
+<td>STM32CubeIDE/GCC</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>STM32F429ZITx</td>
+</tr>
+<tr>
+<td>STM32Cube Firmware</td>
+<td>FW_F4 V1.26.2</td>
+</tr>
+<tr>
+<td>TinyUSB Version</td>
+<td>0.13.0</td>
+</tr>
+</tbody>
+</table></div>
+<h3 id="hardware">Hardware</h3>
+<p>I&rsquo;m using a custom board with STM32F429ZI, but process isn&rsquo;t diffrent for other chips and other supported <a class="link" href="https://github.com/hathach/tinyusb"  target="_blank" rel="noopener"
+    >ST MCUs</a>. My board uses Full Speed USB connected to USB_OTG_FS of MCU, based on your hardware, you may also use High Speed or Full Speed USB connected to USB_OTG_HS of MCU.</p>
+<h2 id="project-configuration-in-cubemx">Project Configuration in CubeMX</h2>
+<h3 id="usb-peripheral">USB Peripheral</h3>
+<p>As i mentioned before, i&rsquo;m using USB_OTG_FS for usb communication, so first step is to enable this peripheral in cube mx. to do so, must set the Mode of USB_OTG_FS to <em><strong>Device Only</strong></em> and enable global interrupt of USB in <em><strong>NVIC Settings</strong></em> tab of <em><strong>Configuration</strong></em> window.</p>
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/usb_config.png"
+	width="697"
+	height="360"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/usb_config_hu06948f5aef267d68b9c1317898f8d356_45052_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/usb_config_hu06948f5aef267d68b9c1317898f8d356_45052_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="USB configuration in CubeMX"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="193"
+		data-flex-basis="464px"
+	
+></p>
+<h3 id="clock-configuration">Clock Configuration</h3>
+<p>After enabling USB hardware, we must configure the clock of the MCU.
+<style type="text/css">.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:#444;background:#e7f2fa}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:#fff;background:#6ab0de}.notice.warning .notice-title{background:rgba(217,83,79,.9)}.notice.warning{background:#fae2e2}.notice.info .notice-title{background:#f0b37e}.notice.info{background:#fff2db}.notice.note .notice-title{background:#6ab0de}.notice.note{background:#e7f2fA}.notice.tip .notice-title{background:rgba(92,184,92,.8)}.notice.tip{background:#e6f9e6}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:0.125em;position:relative}</style>
+<div><svg width="0" height="0" display="none" xmlns="http://www.w3.org/2000/svg"><symbol id="tip-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></symbol><symbol id="note-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="warning-notice" viewBox="0 0 576 512" preserveAspectRatio="xMidYMid meet"><path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="info-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"/></symbol></svg></div><div class="notice note" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#note-notice"></use></svg></span>Note</p><p>USB peripheral in STM32 need external clock source to work!</p></div>
+</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/clock_config.png"
+	width="1122"
+	height="489"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/clock_config_hu1494f085a2776b5d9976f60c13f2e152_66572_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/clock_config_hu1494f085a2776b5d9976f60c13f2e152_66572_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Clock configuration in CubeMX"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="229"
+		data-flex-basis="550px"
+	
+></p>
+<h2 id="importing-tinyusb-library-into-project">Importing TinyUSB library into project</h2>
+<p>Clone or download the <a class="link" href="https://github.com/hathach/tinyusb"  target="_blank" rel="noopener"
+    >TinyUSB reposetory</a> in a folder. The library itself is in <em><strong>src</strong></em> folder in repository and example codes are in <em><strong>examples</strong></em>.</p>
+<p>Create a new folder in <em><strong>Core</strong></em> folder of project structure and name it <em><strong>TinyUSB</strong></em>. Then right click on it and select <em><strong>Import</strong></em>. In the open window select <em><strong>File System</strong></em> (in <em><strong>General</strong></em> category), then click on <em><strong>Browse</strong></em> and navigate to the downloaded folder from last step and select <em><strong>src</strong></em> folder. In the <em><strong>Import</strong></em> window, select src folder, the rest of options in this window must be the same as following image and click on <em><strong>Finish</strong></em>.</p>
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/import_window.png"
+	width="612"
+	height="680"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/import_window_hu3ecf41d9f2d418b4bb02c3976430825f_39240_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/import_window_hu3ecf41d9f2d418b4bb02c3976430825f_39240_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Importing TinyUSB libraries in CubeIDE"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="90"
+		data-flex-basis="216px"
+	
+></p>
+<p>The next step is to add the folder to include paths. To do so, right click on project (or <em><strong>Project</strong></em> menu) and select <em><strong>Properties</strong></em>. Then go to <em><strong>C/C++ General -&gt; Paths and Symbols -&gt; Includes</strong></em> and add <strong>&ldquo;Core/TinyUSB&rdquo;</strong>, then click on <em><strong>Apply and Close</strong></em>.</p>
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/add_to_path.png"
+	width="807"
+	height="546"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/add_to_path_hu0e5b65f590f8596e5e3c4845c7029a3d_58357_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/add_to_path_hu0e5b65f590f8596e5e3c4845c7029a3d_58357_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Adding TinyUSB libraries to Include Path in CubeIDE"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="147"
+		data-flex-basis="354px"
+	
+></p>
+<h2 id="the-code">The Code</h2>
+<h3 id="adding-example-files-for-msd-to-project">Adding example files for MSD to project</h3>
+<p>TinyUSB MSD example is in <em><strong>TinyUSB repository -&gt; examples -&gt; device -&gt; msc_dual_lun</strong></em>. from <em><strong>src</strong></em> folder, import or copy <em><strong>msc_disk_dual.c</strong></em> and <em><strong>usb_descriptors.c</strong></em> files into <em><strong>Src</strong></em> folder of the project structure and <em><strong>tusb_config.h</strong></em> into <em><strong>Inc</strong></em> folder of the project structure.</p>
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/project_structure.png"
+	width="325"
+	height="424"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/project_structure_hu240b88ff80f50f745526ac24b2330c54_16682_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/project_structure_hu240b88ff80f50f745526ac24b2330c54_16682_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Project Structure"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="76"
+		data-flex-basis="183px"
+	
+></p>
+<h3 id="edit-example-codes">Edit example codes</h3>
+<p>In <em><strong>msc_disk_dual.c</strong></em>, remove <em><strong>#include &ldquo;bsp/board.h&rdquo;</strong></em> to prevent causing error when compling the code. The default way to configure TinyUSB is to pass configuration symbols in compile time (in <em><strong>board.mk</strong></em> file). to make things easier i directly define the needed symbols in <em><strong>tusb_config.h</strong></em> file in project.</p>
+<!-- raw HTML omitted -->
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="c1">//--------------------------------------------------------------------
+</span><span class="c1">// COMMON CONFIGURATION
+</span><span class="c1">//--------------------------------------------------------------------
+</span><span class="hl"><span class="c1"></span><span class="cp">#define CFG_TUSB_MCU                 OPT_MCU_STM32F4
+</span></span><span class="hl"><span class="cp">#define BOARD_DEVICE_RHPORT_SPEED    OPT_MODE_FULL_SPEED
+</span></span><span class="hl"><span class="cp">#define BOARD_DEVICE_RHPORT_NUM      0
+</span></span><span class="hl"><span class="cp">#define CFG_TUSB_RHPORT_MODE         (OPT_MODE_DEVICE | OPT_MODE_FULL_SPEED)</span></span></code></pre></div>
+<h3 id="redirecting-stm32-usb-interrupt-to-tinyusb-stack">Redirecting STM32 USB interrupt to TinyUSB stack</h3>
+<p>Add below code to <em><strong>stm32f4xx_it.c</strong></em> (or it&rsquo;s equivalent if you are using another STM32 family).</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* USER CODE BEGIN Includes */</span>
+<span class="hl"><span class="cp">#include</span> <span class="cpf">&#34;tusb.h&#34;</span><span class="cp">
+</span></span><span class="cp"></span><span class="cm">/* USER CODE END Includes */</span>
+
+<span class="p">...</span>
+
+<span class="cm">/**
+</span><span class="cm"> * @brief This function handles USB On The Go FS global interrupt.
+</span><span class="cm"> */</span>
+<span class="kt">void</span> <span class="n">OTG_FS_IRQHandler</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+<span class="p">{</span>
+	<span class="cm">/* USER CODE BEGIN OTG_FS_IRQn 0 */</span>
+<span class="hl">	<span class="n">tud_int_handler</span><span class="p">(</span><span class="n">BOARD_DEVICE_RHPORT_NUM</span><span class="p">);</span>
+</span><span class="hl">	<span class="k">return</span><span class="p">;</span>
+</span>	<span class="cm">/* USER CODE END OTG_FS_IRQn 0 */</span>
+	<span class="n">HAL_PCD_IRQHandler</span><span class="p">(</span><span class="o">&amp;</span><span class="n">hpcd_USB_OTG_FS</span><span class="p">);</span>
+	<span class="cm">/* USER CODE BEGIN OTG_FS_IRQn 1 */</span>
+
+	<span class="cm">/* USER CODE END OTG_FS_IRQn 1 */</span>
+<span class="p">}</span></code></pre></div>
+<p>After doing above steps, we must first initialize TinyUSB stack by calling <em><strong>tusb_init()</strong></em> and then continuously calling <em><strong>tud_task()</strong></em> in the main loop of program (or in a task if using RTOS) to service the USB requests.</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/* USER CODE BEGIN Includes */</span>
+<span class="hl"><span class="cp">#include</span> <span class="cpf">&#34;tusb.h&#34;</span><span class="cp">
+</span></span><span class="cp"></span><span class="cm">/* USER CODE END Includes */</span>
+
+<span class="cm">/* Infinite loop */</span>
+<span class="cm">/* USER CODE BEGIN WHILE */</span>
+<span class="hl"><span class="n">tusb_init</span><span class="p">();</span>
+</span><span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+<span class="hl">	<span class="n">tud_task</span><span class="p">();</span>
+</span>	<span class="cm">/* USER CODE END WHILE */</span>
+
+	<span class="cm">/* USER CODE BEGIN 3 */</span>
+<span class="p">}</span>
+<span class="cm">/* USER CODE END 3 */</span></code></pre></div>
+<p>Now compile and flash the code.
+<div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>The TinyUSB version that i used (0.13.0), has a code guard bug for synopsis port, that cause the multiple <em><strong>multiple definition of &hellip;</strong></em> error when compling the code. for simplicity i deleted all ports in <em><strong>portable</strong></em> folder of imported TinyUSB library but the ST port from the project.</p>
+<p><img src="portable_folder.png" alt="Deleting unused ports"></p>
+<p>After deleting the mentioned files, performe a clean build of project!</p></div>
+
+Now when connecting the board to PC (via USB!), you should see to mass storage devices (This is a two LUN example):</p>
+<p><img src="/p/msd-using-tinyusb-stack-in-stm32/Results.png"
+	width="561"
+	height="109"
+	srcset="/p/msd-using-tinyusb-stack-in-stm32/Results_hu2eddd697513620a8e69a73a823699a5a_5781_480x0_resize_box_3.png 480w, /p/msd-using-tinyusb-stack-in-stm32/Results_hu2eddd697513620a8e69a73a823699a5a_5781_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Mass Storage Devices"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="514"
+		data-flex-basis="1235px"
+	
+></p>
+<hr>
+<blockquote>
+<p>Refrences:</p>
+<ol>
+<li><a class="link" href="https://docs.tinyusb.org"  target="_blank" rel="noopener"
+    >TinyUSB Offital website</a></li>
+<li><a class="link" href="https://github.com/hathach/tinyusb"  target="_blank" rel="noopener"
+    >TinyUSB GitHUB repository</a></li>
+<li><a class="link" href="https://anvilelectronics.ovh/tinyusb-na-stm32-device-cdc/"  target="_blank" rel="noopener"
+    >A CDC (CDC+MSD) example using TinyUSB and STM32</a></li>
+</ol>
+</blockquote>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/stm32/">STM32</a>
+        
+            <a href="/tags/tinyusb/">TinyUSB</a>
+        
+            <a href="/tags/msd/">MSD</a>
+        
+            <a href="/tags/msc/">MSC</a>
+        
+            <a href="/tags/usb/">USB</a>
+        
+    </section>
+
+
+    </footer>
+
+
+    
+</article>
+
+    
+
+    <aside class="related-contents--wrapper">
+    
+    
+</aside>
+
+     
+    
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+        2022 RBahrami&#39;s Blog
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.8.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#introduction">Introduction</a>
+      <ol>
+        <li><a href="#my-envirement">My Envirement:</a></li>
+        <li><a href="#hardware">Hardware</a></li>
+      </ol>
+    </li>
+    <li><a href="#project-configuration-in-cubemx">Project Configuration in CubeMX</a>
+      <ol>
+        <li><a href="#usb-peripheral">USB Peripheral</a></li>
+        <li><a href="#clock-configuration">Clock Configuration</a></li>
+      </ol>
+    </li>
+    <li><a href="#importing-tinyusb-library-into-project">Importing TinyUSB library into project</a></li>
+    <li><a href="#the-code">The Code</a>
+      <ol>
+        <li><a href="#adding-example-files-for-msd-to-project">Adding example files for MSD to project</a></li>
+        <li><a href="#edit-example-codes">Edit example codes</a></li>
+        <li><a href="#redirecting-stm32-usb-interrupt-to-tinyusb-stack">Redirecting STM32 USB interrupt to TinyUSB stack</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -6,6 +6,235 @@
         <description>Recent content on RBahrami&#39;s Blog</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Tue, 22 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://RBahrami.github.io/index.xml" rel="self" type="application/rss+xml" />
+        <lastBuildDate>Wed, 23 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://RBahrami.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>MSD using tinyUSB stack in STM32</title>
+        <link>https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/</link>
+        <pubDate>Wed, 23 Feb 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/</guid>
+        <description>&lt;blockquote&gt;
+&lt;p&gt;TinyUSB is an open-source cross-platform USB Host/Device stack for embedded systems, designed to be memory-safe with no dynamic allocation and thread-safe with all interrupt events being deferred and then handled in the non-ISR task function.&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h2 id=&#34;introduction&#34;&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;The ST&amp;rsquo;s USB stack that is included in STM32CubeIDE, has lots of problems, including:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Large footprint.&lt;/li&gt;
+&lt;li&gt;All of the USB services are running on ISR&lt;/li&gt;
+&lt;li&gt;Can&amp;rsquo;t correctly use it in RTOS&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;In this article, I&amp;rsquo;m going to show you how to use &lt;a class=&#34;link&#34; href=&#34;https://www.tinyusb.org&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TinyUSB&lt;/a&gt; stack to create a USB mass storage device (MSD) using STM32.&lt;/p&gt;
+&lt;h3 id=&#34;my-envirement&#34;&gt;My Envirement:&lt;/h3&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr&gt;
+&lt;th&gt;Syntax&lt;/th&gt;
+&lt;th&gt;Description&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr&gt;
+&lt;td&gt;OS&lt;/td&gt;
+&lt;td&gt;Windows 10 (64bit)&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Language&lt;/td&gt;
+&lt;td&gt;C&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;IDE/Compiler&lt;/td&gt;
+&lt;td&gt;STM32CubeIDE/GCC&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;Target&lt;/td&gt;
+&lt;td&gt;STM32F429ZITx&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;STM32Cube Firmware&lt;/td&gt;
+&lt;td&gt;FW_F4 V1.26.2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr&gt;
+&lt;td&gt;TinyUSB Version&lt;/td&gt;
+&lt;td&gt;0.13.0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;h3 id=&#34;hardware&#34;&gt;Hardware&lt;/h3&gt;
+&lt;p&gt;I&amp;rsquo;m using a custom board with STM32F429ZI, but process isn&amp;rsquo;t diffrent for other chips and other supported &lt;a class=&#34;link&#34; href=&#34;https://github.com/hathach/tinyusb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;ST MCUs&lt;/a&gt;. My board uses Full Speed USB connected to USB_OTG_FS of MCU, based on your hardware, you may also use High Speed or Full Speed USB connected to USB_OTG_HS of MCU.&lt;/p&gt;
+&lt;h2 id=&#34;project-configuration-in-cubemx&#34;&gt;Project Configuration in CubeMX&lt;/h2&gt;
+&lt;h3 id=&#34;usb-peripheral&#34;&gt;USB Peripheral&lt;/h3&gt;
+&lt;p&gt;As i mentioned before, i&amp;rsquo;m using USB_OTG_FS for usb communication, so first step is to enable this peripheral in cube mx. to do so, must set the Mode of USB_OTG_FS to &lt;em&gt;&lt;strong&gt;Device Only&lt;/strong&gt;&lt;/em&gt; and enable global interrupt of USB in &lt;em&gt;&lt;strong&gt;NVIC Settings&lt;/strong&gt;&lt;/em&gt; tab of &lt;em&gt;&lt;strong&gt;Configuration&lt;/strong&gt;&lt;/em&gt; window.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/usb_config.png&#34;
+	width=&#34;697&#34;
+	height=&#34;360&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/usb_config_hu06948f5aef267d68b9c1317898f8d356_45052_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/usb_config_hu06948f5aef267d68b9c1317898f8d356_45052_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;USB configuration in CubeMX&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;193&#34;
+		data-flex-basis=&#34;464px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;clock-configuration&#34;&gt;Clock Configuration&lt;/h3&gt;
+&lt;p&gt;After enabling USB hardware, we must configure the clock of the MCU.
+&lt;style type=&#34;text/css&#34;&gt;.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:#444;background:#e7f2fa}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:#fff;background:#6ab0de}.notice.warning .notice-title{background:rgba(217,83,79,.9)}.notice.warning{background:#fae2e2}.notice.info .notice-title{background:#f0b37e}.notice.info{background:#fff2db}.notice.note .notice-title{background:#6ab0de}.notice.note{background:#e7f2fA}.notice.tip .notice-title{background:rgba(92,184,92,.8)}.notice.tip{background:#e6f9e6}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:0.125em;position:relative}&lt;/style&gt;
+&lt;div&gt;&lt;svg width=&#34;0&#34; height=&#34;0&#34; display=&#34;none&#34; xmlns=&#34;http://www.w3.org/2000/svg&#34;&gt;&lt;symbol id=&#34;tip-notice&#34; viewBox=&#34;0 0 512 512&#34; preserveAspectRatio=&#34;xMidYMid meet&#34;&gt;&lt;path d=&#34;M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z&#34;/&gt;&lt;/symbol&gt;&lt;symbol id=&#34;note-notice&#34; viewBox=&#34;0 0 512 512&#34; preserveAspectRatio=&#34;xMidYMid meet&#34;&gt;&lt;path d=&#34;M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z&#34;/&gt;&lt;/symbol&gt;&lt;symbol id=&#34;warning-notice&#34; viewBox=&#34;0 0 576 512&#34; preserveAspectRatio=&#34;xMidYMid meet&#34;&gt;&lt;path d=&#34;M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z&#34;/&gt;&lt;/symbol&gt;&lt;symbol id=&#34;info-notice&#34; viewBox=&#34;0 0 512 512&#34; preserveAspectRatio=&#34;xMidYMid meet&#34;&gt;&lt;path d=&#34;M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z&#34;/&gt;&lt;/symbol&gt;&lt;/svg&gt;&lt;/div&gt;&lt;div class=&#34;notice note&#34; &gt;
+&lt;p class=&#34;first notice-title&#34;&gt;&lt;span class=&#34;icon-notice baseline&#34;&gt;&lt;svg&gt;&lt;use href=&#34;#note-notice&#34;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/span&gt;Note&lt;/p&gt;&lt;p&gt;USB peripheral in STM32 need external clock source to work!&lt;/p&gt;&lt;/div&gt;
+&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/clock_config.png&#34;
+	width=&#34;1122&#34;
+	height=&#34;489&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/clock_config_hu1494f085a2776b5d9976f60c13f2e152_66572_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/clock_config_hu1494f085a2776b5d9976f60c13f2e152_66572_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Clock configuration in CubeMX&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;229&#34;
+		data-flex-basis=&#34;550px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;importing-tinyusb-library-into-project&#34;&gt;Importing TinyUSB library into project&lt;/h2&gt;
+&lt;p&gt;Clone or download the &lt;a class=&#34;link&#34; href=&#34;https://github.com/hathach/tinyusb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TinyUSB reposetory&lt;/a&gt; in a folder. The library itself is in &lt;em&gt;&lt;strong&gt;src&lt;/strong&gt;&lt;/em&gt; folder in repository and example codes are in &lt;em&gt;&lt;strong&gt;examples&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;Create a new folder in &lt;em&gt;&lt;strong&gt;Core&lt;/strong&gt;&lt;/em&gt; folder of project structure and name it &lt;em&gt;&lt;strong&gt;TinyUSB&lt;/strong&gt;&lt;/em&gt;. Then right click on it and select &lt;em&gt;&lt;strong&gt;Import&lt;/strong&gt;&lt;/em&gt;. In the open window select &lt;em&gt;&lt;strong&gt;File System&lt;/strong&gt;&lt;/em&gt; (in &lt;em&gt;&lt;strong&gt;General&lt;/strong&gt;&lt;/em&gt; category), then click on &lt;em&gt;&lt;strong&gt;Browse&lt;/strong&gt;&lt;/em&gt; and navigate to the downloaded folder from last step and select &lt;em&gt;&lt;strong&gt;src&lt;/strong&gt;&lt;/em&gt; folder. In the &lt;em&gt;&lt;strong&gt;Import&lt;/strong&gt;&lt;/em&gt; window, select src folder, the rest of options in this window must be the same as following image and click on &lt;em&gt;&lt;strong&gt;Finish&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/import_window.png&#34;
+	width=&#34;612&#34;
+	height=&#34;680&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/import_window_hu3ecf41d9f2d418b4bb02c3976430825f_39240_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/import_window_hu3ecf41d9f2d418b4bb02c3976430825f_39240_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Importing TinyUSB libraries in CubeIDE&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;90&#34;
+		data-flex-basis=&#34;216px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;p&gt;The next step is to add the folder to include paths. To do so, right click on project (or &lt;em&gt;&lt;strong&gt;Project&lt;/strong&gt;&lt;/em&gt; menu) and select &lt;em&gt;&lt;strong&gt;Properties&lt;/strong&gt;&lt;/em&gt;. Then go to &lt;em&gt;&lt;strong&gt;C/C++ General -&amp;gt; Paths and Symbols -&amp;gt; Includes&lt;/strong&gt;&lt;/em&gt; and add &lt;strong&gt;&amp;ldquo;Core/TinyUSB&amp;rdquo;&lt;/strong&gt;, then click on &lt;em&gt;&lt;strong&gt;Apply and Close&lt;/strong&gt;&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/add_to_path.png&#34;
+	width=&#34;807&#34;
+	height=&#34;546&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/add_to_path_hu0e5b65f590f8596e5e3c4845c7029a3d_58357_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/add_to_path_hu0e5b65f590f8596e5e3c4845c7029a3d_58357_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Adding TinyUSB libraries to Include Path in CubeIDE&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;147&#34;
+		data-flex-basis=&#34;354px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h2 id=&#34;the-code&#34;&gt;The Code&lt;/h2&gt;
+&lt;h3 id=&#34;adding-example-files-for-msd-to-project&#34;&gt;Adding example files for MSD to project&lt;/h3&gt;
+&lt;p&gt;TinyUSB MSD example is in &lt;em&gt;&lt;strong&gt;TinyUSB repository -&amp;gt; examples -&amp;gt; device -&amp;gt; msc_dual_lun&lt;/strong&gt;&lt;/em&gt;. from &lt;em&gt;&lt;strong&gt;src&lt;/strong&gt;&lt;/em&gt; folder, import or copy &lt;em&gt;&lt;strong&gt;msc_disk_dual.c&lt;/strong&gt;&lt;/em&gt; and &lt;em&gt;&lt;strong&gt;usb_descriptors.c&lt;/strong&gt;&lt;/em&gt; files into &lt;em&gt;&lt;strong&gt;Src&lt;/strong&gt;&lt;/em&gt; folder of the project structure and &lt;em&gt;&lt;strong&gt;tusb_config.h&lt;/strong&gt;&lt;/em&gt; into &lt;em&gt;&lt;strong&gt;Inc&lt;/strong&gt;&lt;/em&gt; folder of the project structure.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/project_structure.png&#34;
+	width=&#34;325&#34;
+	height=&#34;424&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/project_structure_hu240b88ff80f50f745526ac24b2330c54_16682_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/project_structure_hu240b88ff80f50f745526ac24b2330c54_16682_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Project Structure&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;76&#34;
+		data-flex-basis=&#34;183px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;h3 id=&#34;edit-example-codes&#34;&gt;Edit example codes&lt;/h3&gt;
+&lt;p&gt;In &lt;em&gt;&lt;strong&gt;msc_disk_dual.c&lt;/strong&gt;&lt;/em&gt;, remove &lt;em&gt;&lt;strong&gt;#include &amp;ldquo;bsp/board.h&amp;rdquo;&lt;/strong&gt;&lt;/em&gt; to prevent causing error when compling the code. The default way to configure TinyUSB is to pass configuration symbols in compile time (in &lt;em&gt;&lt;strong&gt;board.mk&lt;/strong&gt;&lt;/em&gt; file). to make things easier i directly define the needed symbols in &lt;em&gt;&lt;strong&gt;tusb_config.h&lt;/strong&gt;&lt;/em&gt; file in project.&lt;/p&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;!-- raw HTML omitted --&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;c1&#34;&gt;//--------------------------------------------------------------------
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;// COMMON CONFIGURATION
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;//--------------------------------------------------------------------
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;#define CFG_TUSB_MCU                 OPT_MCU_STM32F4
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define BOARD_DEVICE_RHPORT_SPEED    OPT_MODE_FULL_SPEED
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define BOARD_DEVICE_RHPORT_NUM      0
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#define CFG_TUSB_RHPORT_MODE         (OPT_MODE_DEVICE | OPT_MODE_FULL_SPEED)&lt;/span&gt;&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;h3 id=&#34;redirecting-stm32-usb-interrupt-to-tinyusb-stack&#34;&gt;Redirecting STM32 USB interrupt to TinyUSB stack&lt;/h3&gt;
+&lt;p&gt;Add below code to &lt;em&gt;&lt;strong&gt;stm32f4xx_it.c&lt;/strong&gt;&lt;/em&gt; (or it&amp;rsquo;s equivalent if you are using another STM32 family).&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN Includes */&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;#34;tusb.h&amp;#34;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* USER CODE END Includes */&lt;/span&gt;
+
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/**
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; * @brief This function handles USB On The Go FS global interrupt.
+&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt; */&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;OTG_FS_IRQHandler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+	&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN OTG_FS_IRQn 0 */&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;tud_int_handler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;BOARD_DEVICE_RHPORT_NUM&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#34;hl&#34;&gt;	&lt;span class=&#34;k&#34;&gt;return&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/span&gt;	&lt;span class=&#34;cm&#34;&gt;/* USER CODE END OTG_FS_IRQn 0 */&lt;/span&gt;
+	&lt;span class=&#34;n&#34;&gt;HAL_PCD_IRQHandler&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;hpcd_USB_OTG_FS&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+	&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN OTG_FS_IRQn 1 */&lt;/span&gt;
+
+	&lt;span class=&#34;cm&#34;&gt;/* USER CODE END OTG_FS_IRQn 1 */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;After doing above steps, we must first initialize TinyUSB stack by calling &lt;em&gt;&lt;strong&gt;tusb_init()&lt;/strong&gt;&lt;/em&gt; and then continuously calling &lt;em&gt;&lt;strong&gt;tud_task()&lt;/strong&gt;&lt;/em&gt; in the main loop of program (or in a task if using RTOS) to service the USB requests.&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN Includes */&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;cp&#34;&gt;#include&lt;/span&gt; &lt;span class=&#34;cpf&#34;&gt;&amp;#34;tusb.h&amp;#34;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;
+&lt;/span&gt;&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;&lt;span class=&#34;cm&#34;&gt;/* USER CODE END Includes */&lt;/span&gt;
+
+&lt;span class=&#34;cm&#34;&gt;/* Infinite loop */&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN WHILE */&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;&lt;span class=&#34;n&#34;&gt;tusb_init&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;while&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+&lt;span class=&#34;hl&#34;&gt;	&lt;span class=&#34;n&#34;&gt;tud_task&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;();&lt;/span&gt;
+&lt;/span&gt;	&lt;span class=&#34;cm&#34;&gt;/* USER CODE END WHILE */&lt;/span&gt;
+
+	&lt;span class=&#34;cm&#34;&gt;/* USER CODE BEGIN 3 */&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;cm&#34;&gt;/* USER CODE END 3 */&lt;/span&gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+&lt;p&gt;Now compile and flash the code.
+&lt;div class=&#34;notice info&#34; &gt;
+&lt;p class=&#34;first notice-title&#34;&gt;&lt;span class=&#34;icon-notice baseline&#34;&gt;&lt;svg&gt;&lt;use href=&#34;#info-notice&#34;&gt;&lt;/use&gt;&lt;/svg&gt;&lt;/span&gt;Info&lt;/p&gt;&lt;p&gt;The TinyUSB version that i used (0.13.0), has a code guard bug for synopsis port, that cause the multiple &lt;em&gt;&lt;strong&gt;multiple definition of &amp;hellip;&lt;/strong&gt;&lt;/em&gt; error when compling the code. for simplicity i deleted all ports in &lt;em&gt;&lt;strong&gt;portable&lt;/strong&gt;&lt;/em&gt; folder of imported TinyUSB library but the ST port from the project.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;portable_folder.png&#34; alt=&#34;Deleting unused ports&#34;&gt;&lt;/p&gt;
+&lt;p&gt;After deleting the mentioned files, performe a clean build of project!&lt;/p&gt;&lt;/div&gt;
+
+Now when connecting the board to PC (via USB!), you should see to mass storage devices (This is a two LUN example):&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/Results.png&#34;
+	width=&#34;561&#34;
+	height=&#34;109&#34;
+	srcset=&#34;https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/Results_hu2eddd697513620a8e69a73a823699a5a_5781_480x0_resize_box_3.png 480w, https://RBahrami.github.io/p/msd-using-tinyusb-stack-in-stm32/Results_hu2eddd697513620a8e69a73a823699a5a_5781_1024x0_resize_box_3.png 1024w&#34;
+	loading=&#34;lazy&#34;
+	
+		alt=&#34;Mass Storage Devices&#34;
+	
+	
+		class=&#34;gallery-image&#34; 
+		data-flex-grow=&#34;514&#34;
+		data-flex-basis=&#34;1235px&#34;
+	
+&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;blockquote&gt;
+&lt;p&gt;Refrences:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://docs.tinyusb.org&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TinyUSB Offital website&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://github.com/hathach/tinyusb&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;TinyUSB GitHUB repository&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;&lt;a class=&#34;link&#34; href=&#34;https://anvilelectronics.ovh/tinyusb-na-stm32-device-cdc/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;A CDC (CDC+MSD) example using TinyUSB and STM32&lt;/a&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/blockquote&gt;
+</description>
+        </item>
+        
     </channel>
 </rss>
