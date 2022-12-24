@@ -67,7 +67,7 @@
     
     <header class="article-category">
         
-            <a href="/categories/xamarin/" >
+            <a href="/categories/xamarin/" style="background-color: #2a9d8f; color: #fff;">
                 Xamarin
             </a>
         
@@ -113,6 +113,29 @@
     <blockquote>
 <p>This walkthrough will show the process of creating and using C++ library in Xamarin.Forms project (Only Android).</p>
 </blockquote>
+<h3 id="my-environment">My Environment</h3>
+<div class="table-wrapper"><table>
+<thead>
+<tr>
+<th>Syntax</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OS</td>
+<td>Windows 10 (64bit)</td>
+</tr>
+<tr>
+<td>IDE/Compiler</td>
+<td>VS 2022 Community</td>
+</tr>
+<tr>
+<td>Target</td>
+<td>Android 11</td>
+</tr>
+</tbody>
+</table></div>
 <h2 id="step-1---creating-android-native-library-in-c">Step 1 - Creating Android Native library in C++</h2>
 <style type="text/css">.notice{padding:18px;line-height:24px;margin-bottom:24px;border-radius:4px;color:#444;background:#e7f2fa}.notice p:last-child{margin-bottom:0}.notice-title{margin:-18px -18px 12px;padding:4px 18px;border-radius:4px 4px 0 0;font-weight:700;color:#fff;background:#6ab0de}.notice.warning .notice-title{background:rgba(217,83,79,.9)}.notice.warning{background:#fae2e2}.notice.info .notice-title{background:#f0b37e}.notice.info{background:#fff2db}.notice.note .notice-title{background:#6ab0de}.notice.note{background:#e7f2fA}.notice.tip .notice-title{background:rgba(92,184,92,.8)}.notice.tip{background:#e6f9e6}.icon-notice{display:inline-flex;align-self:center;margin-right:8px}.icon-notice img,.icon-notice svg{height:1em;width:1em;fill:currentColor}.icon-notice img,.icon-notice.baseline svg{top:0.125em;position:relative}</style>
 <div><svg width="0" height="0" display="none" xmlns="http://www.w3.org/2000/svg"><symbol id="tip-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.967-111.033 248-248 248S8 392.967 8 256 119.033 8 256 8s248 111.033 248 248zM227.314 387.314l184-184c6.248-6.248 6.248-16.379 0-22.627l-22.627-22.627c-6.248-6.249-16.379-6.249-22.628 0L216 308.118l-70.059-70.059c-6.248-6.248-16.379-6.248-22.628 0l-22.627 22.627c-6.248 6.248-6.248 16.379 0 22.627l104 104c6.249 6.249 16.379 6.249 22.628.001z"/></symbol><symbol id="note-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="warning-notice" viewBox="0 0 576 512" preserveAspectRatio="xMidYMid meet"><path d="M569.517 440.013C587.975 472.007 564.806 512 527.94 512H48.054c-36.937 0-59.999-40.055-41.577-71.987L246.423 23.985c18.467-32.009 64.72-31.951 83.154 0l239.94 416.028zM288 354c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"/></symbol><symbol id="info-notice" viewBox="0 0 512 512" preserveAspectRatio="xMidYMid meet"><path d="M256 8C119.043 8 8 119.083 8 256c0 136.997 111.043 248 248 248s248-111.003 248-248C504 119.083 392.957 8 256 8zm0 110c23.196 0 42 18.804 42 42s-18.804 42-42 42-42-18.804-42-42 18.804-42 42-42zm56 254c0 6.627-5.373 12-12 12h-88c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h12v-64h-12c-6.627 0-12-5.373-12-12v-24c0-6.627 5.373-12 12-12h64c6.627 0 12 5.373 12 12v100h12c6.627 0 12 5.373 12 12v24z"/></symbol></svg></div><div class="notice note" >
@@ -384,6 +407,387 @@
 ></p>
 <p>At the end build the project (again make sure that project is in <strong>Release for ARM64</strong> configuration!). If every thing is OK, the project should build successfully and a file named <strong>libMathFuncs.so</strong> is created in project output directory (SolutionDir\MyMathFuncsLib\ARM64\Release).</p>
 <h2 id="step-2---creating-xamarinform-application">Step 2 - Creating Xamarin.Form application</h2>
+<p>Right click on the solution on <em>Solution Explorer</em>, then select <em>New Project</em> from <em>Add</em> menu. Choose <em><strong>Mobile App (Xamarin.Forms)</strong></em>, and name it <em>XamarinApp</em> and create the project. In the next window select <em>Blank</em> as app template and only select <em>Android</em> as platform.</p>
+<p><img src="/p/xamarin.forms-and-c/XamarinAppProject.png"
+	width="1355"
+	height="734"
+	srcset="/p/xamarin.forms-and-c/XamarinAppProject_hub6e9832277099a4b7cdb54c3ac76891d_33916_480x0_resize_box_3.png 480w, /p/xamarin.forms-and-c/XamarinAppProject_hub6e9832277099a4b7cdb54c3ac76891d_33916_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Xamarin.Forms Project"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="184"
+		data-flex-basis="443px"
+	
+></p>
+<p>In Solution Explorer, right click on <strong>XamarinApp.Android</strong> and select <strong>Set As Startup Project</strong>.</p>
+<p><img src="/p/xamarin.forms-and-c/XamarinAppProject.Android-StartupProject.png"
+	width="341"
+	height="534"
+	srcset="/p/xamarin.forms-and-c/XamarinAppProject.Android-StartupProject_huac47744fc597e6922e64ac89fb52b12d_23803_480x0_resize_box_3.png 480w, /p/xamarin.forms-and-c/XamarinAppProject.Android-StartupProject_huac47744fc597e6922e64ac89fb52b12d_23803_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="63"
+		data-flex-basis="153px"
+	
+></p>
+<div class="notice tip" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#tip-notice"></use></svg></span>Tip</p><p>To make sure that every thing in the <strong>XamarinApp.Android</strong> project is ok, before going any further, first build and deploy the project.</p></div>
+
+<h2 id="step-3---adding-the-c-library-to-the-xamarin-forms-project">Step 3 - Adding the C++ library to the Xamarin Forms Project</h2>
+<p>Add a new folder to the <strong>XamarinApp.Android</strong> project named <em>lib</em> and another new folder to the <strong>lib</strong> folder named <em>arm64-v8a</em> and copy the <strong>libMathFuncs.so</strong> from the privious step to this folder. Then select the <strong>libMathFuncs.so</strong> and in <strong>Properties</strong> window, set the build action to <strong>AndroidNativeLibrary</strong>.
+<div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>If you are using the <em>.so</em> file in a Xamarin.Android <strong>library</strong> project insted of Xamarin.Android <strong>application</strong> project, replace <strong>AndroidNativeLibrary</strong> with <strong>EmbeddedNativeLibrary</strong>.
+For more information refer to <a href="https://learn.microsoft.com/en-us/xamarin/android/platform/native-libraries">This link</a></p></div>
+</p>
+<p><img src="/p/xamarin.forms-and-c/XamarinApp.Android-sofile.png"
+	width="345"
+	height="663"
+	srcset="/p/xamarin.forms-and-c/XamarinApp.Android-sofile_hu5dfb2f0b8114c714a9658f5d02ce5000_28411_480x0_resize_box_3.png 480w, /p/xamarin.forms-and-c/XamarinApp.Android-sofile_hu5dfb2f0b8114c714a9658f5d02ce5000_28411_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Adding .so file to the project"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="52"
+		data-flex-basis="124px"
+	
+></p>
+<h2 id="step-4---creating-wrapper-of-c-library-for-c">Step 4 - Creating Wrapper of C++ library for C#</h2>
+<p>Add a new folder to the <strong>XamarinApp.Android</strong> project named <em>Models</em> and then add a new class named <em>MyMathFuncs.cs</em> in <strong>Models</strong> folder and replace the content of MyMathFuncs.cs with bellow code:</p>
+<blockquote>
+<p><strong>MyMathFuncs.cs</strong>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span><span class="lnt">33
+</span><span class="lnt">34
+</span><span class="lnt">35
+</span><span class="lnt">36
+</span><span class="lnt">37
+</span><span class="lnt">38
+</span><span class="lnt">39
+</span><span class="lnt">40
+</span><span class="lnt">41
+</span><span class="lnt">42
+</span><span class="lnt">43
+</span><span class="lnt">44
+</span><span class="lnt">45
+</span><span class="lnt">46
+</span><span class="lnt">47
+</span><span class="lnt">48
+</span><span class="lnt">49
+</span><span class="lnt">50
+</span><span class="lnt">51
+</span><span class="lnt">52
+</span><span class="lnt">53
+</span><span class="lnt">54
+</span><span class="lnt">55
+</span><span class="lnt">56
+</span><span class="lnt">57
+</span><span class="lnt">58
+</span><span class="lnt">59
+</span><span class="lnt">60
+</span><span class="lnt">61
+</span><span class="lnt">62
+</span><span class="lnt">63
+</span><span class="lnt">64
+</span><span class="lnt">65
+</span><span class="lnt">66
+</span><span class="lnt">67
+</span><span class="lnt">68
+</span><span class="lnt">69
+</span><span class="lnt">70
+</span><span class="lnt">71
+</span><span class="lnt">72
+</span><span class="lnt">73
+</span><span class="lnt">74
+</span><span class="lnt">75
+</span><span class="lnt">76
+</span><span class="lnt">77
+</span><span class="lnt">78
+</span><span class="lnt">79
+</span><span class="lnt">80
+</span><span class="lnt">81
+</span><span class="lnt">82
+</span><span class="lnt">83
+</span><span class="lnt">84
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">using</span> <span class="n">Microsoft</span><span class="p">.</span><span class="n">Win32</span><span class="p">.</span><span class="n">SafeHandles</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">System</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">System</span><span class="p">.</span><span class="n">Runtime</span><span class="p">.</span><span class="n">InteropServices</span><span class="p">;</span>
+
+<span class="n">namespace</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Droid</span><span class="p">.</span><span class="n">Models</span>
+<span class="p">{</span>
+    <span class="n">internal</span> <span class="n">class</span> <span class="nl">MyMathFuncsSafeHandle</span> <span class="p">:</span> <span class="n">SafeHandleZeroOrMinusOneIsInvalid</span>
+    <span class="p">{</span>
+        <span class="n">public</span> <span class="n">MyMathFuncsSafeHandle</span><span class="p">()</span> <span class="o">:</span> <span class="n">base</span><span class="p">(</span><span class="nb">true</span><span class="p">)</span> <span class="p">{</span> <span class="p">}</span>
+
+        <span class="n">public</span> <span class="n">IntPtr</span> <span class="n">Ptr</span> <span class="o">=&gt;</span> <span class="n">this</span><span class="p">.</span><span class="n">handle</span><span class="p">;</span>
+
+        <span class="n">protected</span> <span class="n">override</span> <span class="kt">bool</span> <span class="nf">ReleaseHandle</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">DisposeMyMathFuncs</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+            <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+    <span class="n">internal</span> <span class="k">static</span> <span class="n">class</span> <span class="n">MyMathFuncsWrapper</span>
+    <span class="p">{</span>
+        <span class="k">const</span> <span class="n">string</span> <span class="n">DllName</span> <span class="o">=</span> <span class="s">&#34;libMathFuncs.so&#34;</span><span class="p">;</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;CreateMyMathFuncsClass&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="n">MyMathFuncsSafeHandle</span> <span class="n">CreateMyMathFuncs</span><span class="p">();</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;DisposeMyMathFuncsClass&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="kt">void</span> <span class="n">DisposeMyMathFuncs</span><span class="p">(</span><span class="n">IntPtr</span> <span class="n">ptr</span><span class="p">);</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;MyMathFuncsAdd&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="kt">double</span> <span class="n">Add</span><span class="p">(</span><span class="n">MyMathFuncsSafeHandle</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;MyMathFuncsSubtract&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="kt">double</span> <span class="n">Subtract</span><span class="p">(</span><span class="n">MyMathFuncsSafeHandle</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;MyMathFuncsMultiply&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="kt">double</span> <span class="n">Multiply</span><span class="p">(</span><span class="n">MyMathFuncsSafeHandle</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+
+        <span class="p">[</span><span class="n">DllImport</span><span class="p">(</span><span class="n">DllName</span><span class="p">,</span> <span class="n">EntryPoint</span> <span class="o">=</span> <span class="s">&#34;MyMathFuncsDivide&#34;</span><span class="p">)]</span>
+        <span class="n">internal</span> <span class="k">static</span> <span class="k">extern</span> <span class="kt">double</span> <span class="n">Divide</span><span class="p">(</span><span class="n">MyMathFuncsSafeHandle</span> <span class="n">ptr</span><span class="p">,</span> <span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">public</span> <span class="n">class</span> <span class="nl">MyMathFuncs</span> <span class="p">:</span> <span class="n">IDisposable</span>
+    <span class="p">{</span>
+        <span class="n">readonly</span> <span class="n">MyMathFuncsSafeHandle</span> <span class="n">handle</span><span class="p">;</span>
+
+        <span class="n">public</span> <span class="nf">MyMathFuncs</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">handle</span> <span class="o">=</span> <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">CreateMyMathFuncs</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="n">protected</span> <span class="n">virtual</span> <span class="kt">void</span> <span class="nf">Dispose</span><span class="p">(</span><span class="kt">bool</span> <span class="n">disposing</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">handle</span> <span class="o">!=</span> <span class="n">null</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">handle</span><span class="p">.</span><span class="n">IsInvalid</span><span class="p">)</span>
+                <span class="n">handle</span><span class="p">.</span><span class="n">Dispose</span><span class="p">();</span>
+        <span class="p">}</span>
+
+        <span class="n">public</span> <span class="kt">void</span> <span class="nf">Dispose</span><span class="p">()</span>
+        <span class="p">{</span>
+            <span class="n">Dispose</span><span class="p">(</span><span class="nb">true</span><span class="p">);</span>
+            <span class="n">GC</span><span class="p">.</span><span class="n">SuppressFinalize</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">public</span> <span class="kt">double</span> <span class="nf">Add</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">public</span> <span class="kt">double</span> <span class="nf">Subtract</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">Subtract</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">public</span> <span class="kt">double</span> <span class="nf">Multiply</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">Multiply</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+
+        <span class="n">public</span> <span class="kt">double</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="k">return</span> <span class="n">MyMathFuncsWrapper</span><span class="p">.</span><span class="n">Divide</span><span class="p">(</span><span class="n">handle</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div></p>
+</blockquote>
+<div class="notice info" >
+<p class="first notice-title"><span class="icon-notice baseline"><svg><use href="#info-notice"></use></svg></span>Info</p><p>For information about above codes, refer to <a href="https://github.com/xamcat/mobcat-samples/tree/master/cpp_with_xamarin#writing-the-managed-library-code">This link</a></p></div>
+
+<h2 id="step-5---using-the-wrapper-in-xamarinforms">Step 5 - Using the Wrapper in Xamarin.Forms</h2>
+<p>Add a new folder named <em>Interfaces</em> to the <em>XamarinApp</em> project. then add a new interface named <em>IMathFuncs.cs</em> to this folder.</p>
+<p><img src="/p/xamarin.forms-and-c/XamarinAppIMathFuncs.png"
+	width="1278"
+	height="687"
+	srcset="/p/xamarin.forms-and-c/XamarinAppIMathFuncs_hu49647f52d27fb4a876ea412524ac9907_61680_480x0_resize_box_3.png 480w, /p/xamarin.forms-and-c/XamarinAppIMathFuncs_hu49647f52d27fb4a876ea412524ac9907_61680_1024x0_resize_box_3.png 1024w"
+	loading="lazy"
+	
+		alt="Interface for Xamarin App"
+	
+	
+		class="gallery-image" 
+		data-flex-grow="186"
+		data-flex-basis="446px"
+	
+></p>
+<p>Replace the content of <strong>IMathFuncs.cs</strong> with this code:</p>
+<blockquote>
+<p><strong>IMathFuncs.cs</strong>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">namespace</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Interfaces</span>
+<span class="p">{</span>
+    <span class="n">public</span> <span class="n">interface</span> <span class="n">IMathFuncs</span>
+    <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">Add</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="nf">Subtract</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="nf">Multiply</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+        <span class="kt">double</span> <span class="nf">Divide</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div></p>
+</blockquote>
+<p>Add a new folder named <em>DependencyService</em> to the <strong>XamarinApp.Android</strong> project, then add a class to it named <em>MathFuncs.cs</em> and replace its content with:</p>
+<blockquote>
+<p><strong>MyMathFuncs.cs</strong>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt"> 1
+</span><span class="lnt"> 2
+</span><span class="lnt"> 3
+</span><span class="lnt"> 4
+</span><span class="lnt"> 5
+</span><span class="lnt"> 6
+</span><span class="lnt"> 7
+</span><span class="lnt"> 8
+</span><span class="lnt"> 9
+</span><span class="lnt">10
+</span><span class="lnt">11
+</span><span class="lnt">12
+</span><span class="lnt">13
+</span><span class="lnt">14
+</span><span class="lnt">15
+</span><span class="lnt">16
+</span><span class="lnt">17
+</span><span class="lnt">18
+</span><span class="lnt">19
+</span><span class="lnt">20
+</span><span class="lnt">21
+</span><span class="lnt">22
+</span><span class="lnt">23
+</span><span class="lnt">24
+</span><span class="lnt">25
+</span><span class="lnt">26
+</span><span class="lnt">27
+</span><span class="lnt">28
+</span><span class="lnt">29
+</span><span class="lnt">30
+</span><span class="lnt">31
+</span><span class="lnt">32
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">using</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Droid</span><span class="p">.</span><span class="n">DependencyService</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Droid</span><span class="p">.</span><span class="n">Models</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Interfaces</span><span class="p">;</span>
+<span class="n">using</span> <span class="n">Xamarin</span><span class="p">.</span><span class="n">Forms</span><span class="p">;</span>
+
+<span class="p">[</span><span class="nl">assembly</span><span class="p">:</span> <span class="n">Dependency</span><span class="p">(</span><span class="n">typeof</span><span class="p">(</span><span class="n">MathFuncs</span><span class="p">))]</span>
+<span class="n">namespace</span> <span class="n">XamarinApp</span><span class="p">.</span><span class="n">Droid</span><span class="p">.</span><span class="n">DependencyService</span>
+<span class="p">{</span>
+    <span class="n">public</span> <span class="n">class</span> <span class="nl">MathFuncs</span> <span class="p">:</span> <span class="n">IMathFuncs</span>
+    <span class="p">{</span>
+        <span class="n">public</span> <span class="kt">double</span> <span class="n">Add</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">MyMathFuncs</span> <span class="n">o</span> <span class="o">=</span> <span class="n">new</span> <span class="n">MyMathFuncs</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">o</span><span class="p">.</span><span class="n">Add</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">public</span> <span class="kt">double</span> <span class="n">Subtract</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">MyMathFuncs</span> <span class="n">o</span> <span class="o">=</span> <span class="n">new</span> <span class="n">MyMathFuncs</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">o</span><span class="p">.</span><span class="n">Subtract</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">public</span> <span class="kt">double</span> <span class="n">Multiply</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">MyMathFuncs</span> <span class="n">o</span> <span class="o">=</span> <span class="n">new</span> <span class="n">MyMathFuncs</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">o</span><span class="p">.</span><span class="n">Multiply</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">public</span> <span class="kt">double</span> <span class="n">Divide</span><span class="p">(</span><span class="kt">double</span> <span class="n">a</span><span class="p">,</span> <span class="kt">double</span> <span class="n">b</span><span class="p">)</span>
+        <span class="p">{</span>
+            <span class="n">MyMathFuncs</span> <span class="n">o</span> <span class="o">=</span> <span class="n">new</span> <span class="n">MyMathFuncs</span><span class="p">();</span>
+            <span class="k">return</span> <span class="n">o</span><span class="p">.</span><span class="n">Divide</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">b</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span></code></pre></td></tr></table>
+</div>
+</div></p>
+</blockquote>
+<p>Finally to call a function in <strong>Xamarin.Forms</strong> application, i.e. <em>XamarinApp</em> in this example:</p>
+<blockquote>
+<div class="highlight"><div class="chroma">
+<table class="lntable"><tr><td class="lntd">
+<pre tabindex="0" class="chroma"><code><span class="lnt">1
+</span><span class="lnt">2
+</span></code></pre></td>
+<td class="lntd">
+<pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="c1">// Calling &#39;Add&#39; function implemented in C++ library:
+</span><span class="c1"></span><span class="kt">double</span> <span class="n">c</span> <span class="o">=</span> <span class="n">DependencyService</span><span class="p">.</span><span class="n">Get</span><span class="o">&lt;</span><span class="n">IMathFuncs</span><span class="o">&gt;</span><span class="p">().</span><span class="n">Add</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">12</span><span class="p">);</span></code></pre></td></tr></table>
+</div>
+</div>
+</blockquote>
+<h2 id="source-code">Source Code</h2>
+<p><a class="link" href="https://github.com/RBahrami/XamarinForms_and_Cpp"  target="_blank" rel="noopener"
+    >Source code</a> of this walkthrough.</p>
+<hr>
+<blockquote>
+<p>Refrences:</p>
+<ol>
+<li><a class="link" href="https://github.com/xamcat/mobcat-samples/tree/master/cpp_with_xamarin#writing-the-managed-library-code"  target="_blank" rel="noopener"
+    >Walkthrough: Using C/C++ with Xamarin</a></li>
+<li><a class="link" href="https://learn.microsoft.com/en-us/xamarin/cross-platform/cpp/"  target="_blank" rel="noopener"
+    >Use C/C++ libraries with Xamarin</a></li>
+<li><a class="link" href="https://learn.microsoft.com/en-us/xamarin/android/platform/native-libraries"  target="_blank" rel="noopener"
+    >Xamarin.Android Using Native Libraries</a></li>
+</ol>
+</blockquote>
 
 </section>
 
@@ -580,8 +984,17 @@
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
+    <li>
+      <ol>
+        <li><a href="#my-environment">My Environment</a></li>
+      </ol>
+    </li>
     <li><a href="#step-1---creating-android-native-library-in-c">Step 1 - Creating Android Native library in C++</a></li>
     <li><a href="#step-2---creating-xamarinform-application">Step 2 - Creating Xamarin.Form application</a></li>
+    <li><a href="#step-3---adding-the-c-library-to-the-xamarin-forms-project">Step 3 - Adding the C++ library to the Xamarin Forms Project</a></li>
+    <li><a href="#step-4---creating-wrapper-of-c-library-for-c">Step 4 - Creating Wrapper of C++ library for C#</a></li>
+    <li><a href="#step-5---using-the-wrapper-in-xamarinforms">Step 5 - Using the Wrapper in Xamarin.Forms</a></li>
+    <li><a href="#source-code">Source Code</a></li>
   </ol>
 </nav>
                 </div>
